@@ -1,24 +1,50 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using Utilla;
 
 namespace AntiSnowballSpam
 {
-    [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInPlugin(Id, Name, Version), BepInDependency("org.legoandmars.gorillatag.utilla")]
+    [System.ComponentModel.Description("HauntedModMenu"), ModdedGamemode]
     internal class Main : BaseUnityPlugin
     {
         internal const string
-            GUID = "crafterbot.antisnowballspam",
-            NAME = "Anti-Snowball",
-            VERSION = "1.0.0";
+            Id = "crafterbot.antisnowballspam",
+            Name = "Anti-Snowball",
+            Version = "1.0.1";
         internal static Main Instance;
 
-        internal bool RoomModded => GorillaNetworking.GorillaComputer.instance.currentGameMode.Contains("modded".ToUpper());
-        internal bool InForest;
+        internal bool RoomModded;
+        internal bool InValidMap;
+
+        private Harmony harmony;
 
         internal Main()
         {
             Instance = this;
-            new Harmony(GUID).PatchAll();
+            harmony = new Harmony(Id);
+        }
+
+        private void OnEnable()
+        {
+            harmony.PatchAll();
+        }
+
+        private void OnDisable()
+        {
+            harmony.UnpatchSelf();
+        }
+
+        [ModdedGamemodeJoin]
+        private void OnGamemodeJoin()
+        {
+            RoomModded = true;
+        }
+
+        [ModdedGamemodeLeave]
+        private void OnGamemodeLeave()
+        {
+            RoomModded = false;
         }
     }
 }
