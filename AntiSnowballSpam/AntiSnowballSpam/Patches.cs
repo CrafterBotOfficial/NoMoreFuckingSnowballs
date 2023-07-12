@@ -28,7 +28,8 @@ namespace AntiSnowballSpam
                     var List = new List<CodeInstruction>();
                     foreach (var instruction in instructions)
                     {
-                        if (instruction.opcode == OpCodes.Call)
+
+                        if (instruction.opcode == OpCodes.Call) // I think this is a method
                         {
                             List.Add(instruction);
                         }

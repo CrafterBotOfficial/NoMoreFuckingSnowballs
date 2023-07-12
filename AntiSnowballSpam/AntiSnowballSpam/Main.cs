@@ -21,6 +21,17 @@ namespace AntiSnowballSpam
             _harmony = new Harmony(Info.Metadata.GUID);
         }
 
+
+        private void Update()
+        {
+            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F4))
+            {
+                RoomModded = true;
+                GorillaGameManager.instance.SpawnSlingshotPlayerImpactEffect(new UnityEngine.Vector3(), 0, 0, 0, 0, 1, new Photon.Pun.PhotonMessageInfo());
+            }
+        }
+
+        #region Callbacksa and Events
         private void OnEnable()
         {
             _harmony.PatchAll(typeof(Patches));
@@ -42,5 +53,6 @@ namespace AntiSnowballSpam
         {
             RoomModded = false;
         }
+        #endregion
     }
 }
