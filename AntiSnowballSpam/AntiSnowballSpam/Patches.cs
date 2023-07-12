@@ -27,8 +27,7 @@ namespace AntiSnowballSpam
             {
                 IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
                 {
-                    var List = new List<CodeInstruction>();
-                    instructions.First(x => x.opcode == OpCodes.Call);
+                    var List = new List<CodeInstruction>() { instructions.First(x => x.opcode == OpCodes.Call) };
                     return List;
                 }
                 _ = Transpiler(null);
