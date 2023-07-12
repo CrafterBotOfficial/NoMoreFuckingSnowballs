@@ -4,35 +4,31 @@ using Utilla;
 
 namespace AntiSnowballSpam
 {
-    [BepInPlugin(Id, Name, Version), BepInDependency("org.legoandmars.gorillatag.utilla")]
+    [BepInPlugin("crafterbot.antisnowballspam", "Anti-Snowball", "1.0.2"), BepInDependency("org.legoandmars.gorillatag.utilla")]
     [System.ComponentModel.Description("HauntedModMenu"), ModdedGamemode]
     internal class Main : BaseUnityPlugin
     {
-        internal const string
-            Id = "crafterbot.antisnowballspam",
-            Name = "Anti-Snowball",
-            Version = "1.0.1";
         internal static Main Instance;
 
         internal bool RoomModded;
         internal bool InValidMap;
 
-        private Harmony harmony;
+        private Harmony _harmony;
 
         internal Main()
         {
             Instance = this;
-            harmony = new Harmony(Id);
+            _harmony = new Harmony(Info.Metadata.GUID);
         }
 
         private void OnEnable()
         {
-            harmony.PatchAll();
+            _harmony.PatchAll(typeof(Patches));
         }
 
         private void OnDisable()
         {
-            harmony.UnpatchSelf();
+            _harmony.UnpatchSelf();
         }
 
         [ModdedGamemodeJoin]

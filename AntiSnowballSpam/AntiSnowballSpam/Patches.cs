@@ -1,24 +1,46 @@
 ﻿using GorillaNetworking;
 using HarmonyLib;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace AntiSnowballSpam
 {
-    [HarmonyPatch]
-    internal class Patches
-    { 
-        [HarmonyPatch(typeof(Slingshot), "LaunchNetworkedProjectile"), HarmonyPrefix]
-        private static bool LaunchSnowball()
+    internal static class Patches
+    {
+        /* Fuck snowballs */
+
+        [HarmonyPatch(typeof(Slingshot), nameof(Slingshot.LaunchNetworkedProjectile)), HarmonyPrefix]
+        private static bool Slingshot_LaunchNetworkedProjectile_Prefix()
         {
             Debug.Log("Projectile Launched | Valid map " + Main.Instance.InValidMap);
             return !Main.Instance.RoomModded;
         }
-        [HarmonyPatch(typeof(GorillaGameManager), "SpawnSlingshotPlayerImpactEffect"), HarmonyPrefix]
-        private static bool ProjectileHit()
+
+        [HarmonyPatch(typeof(GorillaGameManager), nameof(GorillaGameManager.SpawnSlingshotPlayerImpactEffect))]
+        [HarmonyReversePatch(HarmonyReversePatchType.Original)] // Using this to prevent messing with the anti cheat
+        private static void GorillaGameManager_ProjectileHit_ReversePatch()
         {
-            Debug.Log("Projectile hit | Valid map " + Main.Instance.InValidMap);
-            return !Main.Instance.RoomModded;
+            if (Main.Instance.RoomModded)
+            {
+                IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+                {
+                    var List = new List<CodeInstruction>();
+                    foreach (var instruction in instructions)
+                    {
+                        if (instruction.opcode == OpCodes.Call)
+                        {
+                            List.Add(instruction);
+                        }
+                    }
+                    return List;
+                }
+
+                _ = Transpiler(null);
+            }
         }
+
+        /* Dont disable in mountains */
 
         [HarmonyPatch(typeof(GorillaNetworkJoinTrigger), "OnBoxTriggered"), HarmonyPostfix]
         private static void GeoOnTriggered(GorillaNetworkJoinTrigger __instance)
