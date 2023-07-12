@@ -22,7 +22,8 @@ namespace AntiSnowballSpam
         [HarmonyReversePatch(HarmonyReversePatchType.Original)] // Using this to prevent messing with the anti cheat
         private static void GorillaGameManager_ProjectileHit_ReversePatch()
         {
-            if (Main.Instance.RoomModded)
+            Debug.Log("Slingshot hit! | Valid Map:" + Main.Instance.InValidMap);
+            if (Main.Instance.RoomModded && Main.Instance.InValidMap)
             {
                 IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
                 {
@@ -30,17 +31,30 @@ namespace AntiSnowballSpam
                     instructions.First(x => x.opcode == OpCodes.Call);
                     return List;
                 }
-
                 _ = Transpiler(null);
             }
         }
+
+#if DEBUG
+        [HarmonyPatch(typeof(Slingshot), "DestroyProjectile"), HarmonyPostfix]
+        private static void GorillaGameManager_ProjectileHit_Postfix()
+        {
+            Debug.Log("Slingshot hit complete?! | Valid Map:" + Main.Instance.InValidMap);
+        }
+
+        [HarmonyPatch(typeof(GorillaNot), "IncrementRPCCall"), HarmonyPrefix]
+        private static void GorillaNot_IncrementRPCCall_Prefix(string callingMethod = "")
+        {
+            Debug.Log("RPC Called " + callingMethod);
+        }
+#endif
 
         /* Dont disable in mountains */
 
         [HarmonyPatch(typeof(GorillaNetworkJoinTrigger), "OnBoxTriggered"), HarmonyPostfix]
         private static void GeoOnTriggered(GorillaNetworkJoinTrigger __instance)
         {
-            Main.Instance.InValidMap = !__instance.gameModeName.Contains("mountain");
+            Main.Instance.InValidMap = true;// !__instance.gameModeName.Contains("mountain");
         }
     }
 }

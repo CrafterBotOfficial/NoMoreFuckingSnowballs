@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using Photon.Pun;
 using Utilla;
 
 namespace AntiSnowballSpam
@@ -11,7 +12,7 @@ namespace AntiSnowballSpam
         internal static Main Instance;
 
         internal bool RoomModded;
-        internal bool InValidMap;
+        internal bool InValidMap = true;
 
         private Harmony _harmony;
 
@@ -24,9 +25,10 @@ namespace AntiSnowballSpam
 
         private void Update()
         {
-            if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.F4))
+            if (UniverseLib.Input.InputManager.GetKeyDown(UnityEngine.KeyCode.F4))
             {
                 RoomModded = true;
+                if (PhotonNetwork.InRoom)
                 GorillaGameManager.instance.SpawnSlingshotPlayerImpactEffect(new UnityEngine.Vector3(), 0, 0, 0, 0, 1, new Photon.Pun.PhotonMessageInfo());
             }
         }
