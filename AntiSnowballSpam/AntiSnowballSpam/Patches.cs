@@ -1,6 +1,7 @@
 ﻿using GorillaNetworking;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using UnityEngine;
 
@@ -26,14 +27,7 @@ namespace AntiSnowballSpam
                 IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
                 {
                     var List = new List<CodeInstruction>();
-                    foreach (var instruction in instructions)
-                    {
-
-                        if (instruction.opcode == OpCodes.Call) // I think this is a method
-                        {
-                            List.Add(instruction);
-                        }
-                    }
+                    instructions.First(x => x.opcode == OpCodes.Call);
                     return List;
                 }
 
